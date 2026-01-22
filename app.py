@@ -78,7 +78,7 @@ def index():
         }
 
     return render_template(
-        "index.html",
+        "index2.html",
         summary=summary,
         alerts=alerts,
         top_errors=top_errors
