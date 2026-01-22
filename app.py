@@ -16,28 +16,28 @@ def index():
     if request.method == "POST":
         logs = request.form.get("logs", "")
 
-        # 1️⃣ Parse logs into DataFrame
+        # Parse logs into DataFrame
         lines = logs.splitlines()
         df = pd.DataFrame(lines, columns=["raw"])
 
-        # 2️⃣ Extract log levels
+        # Extract log levels
         df["level"] = df["raw"].str.extract("(INFO|WARN|ERROR)")
 
-        # 3️⃣ Count log levels
+        #  Count log levels
         counts = df["level"].value_counts().to_dict()
         info = counts.get("INFO", 0)
         warn = counts.get("WARN", 0)
         error = counts.get("ERROR", 0)
         total = info + warn + error
 
-        # 4️⃣ Determine health status
+        #  Determine health status
         health = "GREEN"
         if error > 5:
             health = "RED"
         elif warn > 3:
             health = "AMBER"
 
-        # 5️⃣ Immediate RED alert rules
+        # Immediate RED alert rules
         if df["raw"].str.contains("database", case=False).sum() >= 2:
             alerts.append({
                 "title": "Database connection failures detected",
@@ -56,11 +56,11 @@ def index():
                 "action": "Immediate investigation required"
             })
 
-        # 6️⃣ Top error messages
+        #  Top error messages
         error_msgs = df[df["level"] == "ERROR"]["raw"].value_counts().head(3)
         top_errors = error_msgs.to_dict()
 
-        # 7️⃣ Generate chart
+        #  Generate chart
         os.makedirs("static", exist_ok=True)
         plt.clf()
         plt.bar(["INFO", "WARN", "ERROR"], [info, warn, error])
@@ -68,7 +68,7 @@ def index():
         plt.ylabel("Count")
         plt.savefig("static/chart.png")
 
-        # 8️⃣ Summary
+        #  Summary
         summary = {
             "total": total,
             "info": info,
